@@ -1,0 +1,19 @@
+{
+  "name": "cse-zultyskbs",
+  "version": "0.0.1",
+  "description": "Used for /KBS command in ZultysCP Slack Team",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "kbs search"
+  ],
+  "author": "Mendy Green",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.14.1",
+    "http": "0.0.0",
+    "request": "^2.79.0"
+  }
+}
