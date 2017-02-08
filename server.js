@@ -30,7 +30,7 @@ if (req.query.token === token) {
 							"title_link": "http://kbs.zultys.com/login.php?dir=" + links[i][0].href})
 						}
 						if (query) {
-							var search =  new ReExp(query);
+							var search =  new RegExp(query);
 							for (let i = 0,l = attachments.length; i<l;i++){
 								if (search.test(attachments[i].author_name)) {
 									msg = {"text": "Patches " + query, "attachments": [attachments[i]]}
