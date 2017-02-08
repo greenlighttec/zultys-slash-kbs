@@ -6,7 +6,7 @@ const token = process.env.SLACK_INBOUND_TOKEN || ' '; //put the Slack token bein
 const jsdom = require('jsdom');
 
 app.get('/', function (req, res) {
-if (req.query.token === token || req.query.token === '') { 
+if (req.query.token === token) { 
 	var str = req.query.text;
 	str = [str.split(' ', 1)[0], str.substr(str.split(' ', 1)[0].length+1)];
 	var command = str[0]
@@ -20,8 +20,10 @@ if (req.query.token === token || req.query.token === '') {
 					jsdom.env(body,function(err, window){
 						var table = window.document.querySelectorAll('table tbody tr td table')
 						var links = table[0].querySelectorAll('a')
+						var patches = table[0].querySelectorAll('tbody tr td table tbody tr:not([style="#FFFFFF"])')
+						var versions = table[0].querySelectorAll('tbody tr td table tbody tr[style="#FFFFFF"]')
 						for (let i = 0, l = links.length; i<l; i++) {
-							attachments.push({"title": links[i].innerHTML, "id": i, "title_link": "http://kbs.zultys.com/login.php?dir=" + links[i].href})
+							attachments.push({"pretext": patches[i].querySelector('td').innerHTML,"title": links[i].innerHTML, "id": i, "title_link": "http://kbs.zultys.com/login.php?dir=" + links[i].href})
 						}
 						var msg = {"text": "Patches", "attachments": attachments}
 						res.send(msg)
