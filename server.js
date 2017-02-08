@@ -36,7 +36,7 @@ if (req.query.token === token) {
 								if (search.test(attachments[i].author_name)) {
 									searchResults.push(attachments[i])
 									}}
-								msg = {"text": "Patches " + query, "attachments": searchResults]}
+								msg = {"text": "Patches " + query, "attachments": searchResults}
 									} 
 							else { msg = {"text": "Patches", "attachments": attachments} }
 						res.send(msg)
