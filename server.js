@@ -18,14 +18,23 @@ if (req.query.token === token) {
 				var msg = ''
 				var attachments = []
 					jsdom.env(body,function(err, window){
-						var table = window.document.querySelectorAll('table tbody tr td table')
-						var links = table[0].querySelectorAll('a')
-						var patches = table[0].querySelectorAll('tbody tr td table tbody tr:not([style="#FFFFFF"])')
-						var versions = table[0].querySelectorAll('tbody tr td table tbody tr[style="#FFFFFF"]')
-						for (let i = 0, l = links.length; i<l; i++) {
-							attachments.push({"pretext": patches[i].querySelector('td').innerHTML,"title": links[i].innerHTML, "id": i, "title_link": "http://kbs.zultys.com/login.php?dir=" + links[i].href})
+						var table = window.document.getElementsByClassName('issues-text')
+						var arr = [].slice.call(table);
+						var patches = arr.filter((item) => {return item.style.background !== ""});
+						var links = []
+						for (let i = 0, l = patches.length; i<l; i++) {
+							links.push(patches[i].getElementsByTagName('a'))
+							attachments.push({"author_name": patches[i].getElementsByTagName('td')[0].innerHTML,
+							"title": links[i][0].innerHTML,
+							"id": i, 
+							"title_link": "http://kbs.zultys.com/login.php?dir=" + links[i][0].href})
 						}
-						var msg = {"text": "Patches", "attachments": attachments}
+						if (query) {
+							for (let i = 0,l = attachments.length; i<l;i++){
+								if (attachments[i].author_name === query) {
+									msg = {"text": "Patches " + query, "attachments": [attachments[i]]}
+									}}} 
+							else { msg = {"text": "Patches", "attachments": attachments} }
 						res.send(msg)
 					})
 				;}
