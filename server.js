@@ -31,10 +31,13 @@ if (req.query.token === token) {
 						}
 						if (query) {
 							var search =  new RegExp(query);
+							var searchResults = []
 							for (let i = 0,l = attachments.length; i<l;i++){
 								if (search.test(attachments[i].author_name)) {
-									msg = {"text": "Patches " + query, "attachments": [attachments[i]]}
-									}}} 
+									searchResults.push(attachments[i])
+									}}
+								msg = {"text": "Patches " + query, "attachments": searchResults]}
+									} 
 							else { msg = {"text": "Patches", "attachments": attachments} }
 						res.send(msg)
 					})
