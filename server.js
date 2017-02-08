@@ -9,10 +9,10 @@ app.get('/', function (req, res) {
 if (req.query.token === token) { 
 	var str = req.query.text;
 	str = [str.split(' ', 1)[0], str.substr(str.split(' ', 1)[0].length+1)];
-	var command = str[0]
+	var command = new RegExp(str[0])
 	var query = str[1]
-	switch (command) {
-		case "patches":
+	switch (true) {
+		case (command.test("patches")):
 			request('http://kbs.zultys.com/patches.php', function(error, response, body){
 				if (!error && response.statusCode == 200) {
 				var msg = ''
@@ -48,10 +48,10 @@ if (req.query.token === token) {
 				else {console.log(response.statusCode + " " + error);res.send(`<h1>${error} and ${response.statusCode}</h1>`)}
 			})
 			break;
-		case "testing":
+		case (command.test("testing")):
 			var obj = {
 				 "text": "<http://www.kbs.zultys.com|MX 12.0.7>",
-				 "attachments": [{ "title": "Fax Server Patch 1", "title_link": "http://kbs.zultys.com/patches.php?pid=12072" }]
+				 "attachments": [{ "title": "Fax Server Patch 1", "title_link": "http://kbs.zultys.com/login.php?dir=patches.php?pid=12072" }]
 			}
 			res.send(obj)
 			break;
