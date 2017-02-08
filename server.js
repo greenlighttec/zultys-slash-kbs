@@ -36,6 +36,9 @@ if (req.query.token === token) {
 								if (search.test(attachments[i].author_name)) {
 									searchResults.push(attachments[i])
 									}}
+										if (searchResults.length < 1) {
+											searchResults.push({"title": "No patch matches with that filter, please try again"})
+										}
 								msg = {"text": "Patches " + query, "attachments": searchResults}
 									} 
 							else { msg = {"text": "Patches", "attachments": attachments} }
