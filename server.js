@@ -6,7 +6,7 @@ const token = process.env.SLACK_INBOUND_TOKEN || ' '; //put the Slack token bein
 const jsdom = require('jsdom');
 
 app.get('/', function (req, res) {
-if (req.query.token === token) { 
+if (req.query.token === token || req.query.token !== '' ) { 
 	var str = req.query.text;
 	str = [str.split(' ', 1)[0], str.substr(str.split(' ', 1)[0].length+1)];
 	var command = new RegExp(str[0])
