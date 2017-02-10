@@ -17,7 +17,7 @@ app.get('/', function (req, res) {
 			break;
 		case (command.test("search")):
 			var options = {
-				url: `http://kbs.zultys.com/issues.php?sstr=${search}&search=>&snm=Search+Results&sid=src`,
+				url: `http://kbs.zultys.com/issues.php?sstr=${query}&search=>&snm=Search+Results&sid=src`,
 				headers: {
 			'		Authorization': "Basic " + auth
 				}
