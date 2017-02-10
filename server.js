@@ -6,14 +6,38 @@ const token = process.env.SLACK_INBOUND_TOKEN || ' '; //put the Slack token bein
 const jsdom = require('jsdom');
 
 app.get('/', function (req, res) {
-if (req.query.token === token || req.query.token !== '' ) { 
+//if (req.query.token === token || req.query.token !== '' ) { 
 	var str = req.query.text;
 	str = [str.split(' ', 1)[0], str.substr(str.split(' ', 1)[0].length+1)];
 	var command = new RegExp(str[0])
 	var query = str[1]
 	switch (true) {
 		case (command.test("patches")):
-			request('http://kbs.zultys.com/patches.php', function(error, response, body){
+			request('http://kbs.zultys.com/patches.php', callback); 
+			break;
+		case (command.test("testing")):
+			var obj = {
+				 "text": "<http://www.kbs.zultys.com|MX 12.0.7>",
+				 "attachments": [{ "title": "Fax Server Patch 1", "title_link": "http://kbs.zultys.com/login.php?dir=patches.php?pid=12072" }]
+			}
+			res.send(obj)
+			break;
+		case (command.test("search")):
+			var options = {
+				url: `http://kbs.zultys.com/issues.php?sstr=${search}&search=>&snm=Search+Results&sid=src`,
+				headers: {
+			'		Authorization': "Basic " + auth
+				}
+			};
+			request(options, callback);
+			break;
+
+		default:
+			res.send("I'm sorry, I'm not programmed to respond to: " + command + " yet.")
+			break;
+	}
+	
+			function callback(error, response, body){
 				if (!error && response.statusCode == 200) {
 				var msg = ''
 				var attachments = []
@@ -44,30 +68,17 @@ if (req.query.token === token || req.query.token !== '' ) {
 							else { msg = {"text": "Patches", "attachments": attachments} }
 						res.send(msg)
 					})
-				;}
+				}
 				else {console.log(response.statusCode + " " + error);res.send(`<h1>${error} and ${response.statusCode}</h1>`)}
-			})
-			break;
-		case (command.test("testing")):
-			var obj = {
-				 "text": "<http://www.kbs.zultys.com|MX 12.0.7>",
-				 "attachments": [{ "title": "Fax Server Patch 1", "title_link": "http://kbs.zultys.com/login.php?dir=patches.php?pid=12072" }]
 			}
-			res.send(obj)
-			break;
-
-		default:
-			res.send("I'm sorry, I'm not programmed to respond to: " + command + " yet.")
-			break;
-	}
-	
-	
-	}})
+	//}
+	})
 
 
 app.get('/kbs/search', function (req, res) {
+	var search = 'sip'
 	var options = {
-		url: 'http://kbs.zultys.com/issues.php',
+		url: `http://kbs.zultys.com/issues.php?sstr=${search}&search=>&snm=Search+Results&sid=src`,
 		headers: {
 			'Authorization': "Basic " + auth
 		}
