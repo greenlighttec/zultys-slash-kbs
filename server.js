@@ -16,6 +16,7 @@ app.get('/', function (req, res) {
 			request('http://kbs.zultys.com/patches.php', callbackPatches); 
 			break;
 		case (command.test("search")):
+			console.log(query)
 			var options = {
 				url: `http://kbs.zultys.com/issues.php?sstr=${query}&search=>&snm=Search+Results&sid=src`,
 				headers: {
@@ -23,6 +24,7 @@ app.get('/', function (req, res) {
 				}
 			};
 			request(options, callbackSearch);
+			console.log(options)
 			break;
 		case (command.test("testing")):
 			var obj = {
@@ -46,8 +48,8 @@ app.get('/', function (req, res) {
 						console.log(cleanArr)
 						var links = []
 						for (let i = 0, l = cleanArr.length; i<l; i++) {
-							links.push(results[i].getElementsByTagName('a'))
-							results.push({"author_name": results[i].getElementsByTagName('td')[0].innerHTML,
+							links.push(cleanArr[i].getElementsByTagName('a'))
+							results.push({"author_name": cleanArr[i].getElementsByTagName('td')[0].innerHTML,
 							"title": links[i][0].innerHTML,
 							"id": i, 
 							"title_link": "http://kbs.zultys.com/login.php?dir=" + links[i][0].href})
