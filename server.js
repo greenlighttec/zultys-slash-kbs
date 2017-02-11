@@ -42,9 +42,10 @@ app.get('/', function (req, res) {
 					jsdom.env(body,function(err, window){
 						var table = window.document.getElementsByClassName('issues-text')
 						var arr = [].slice.call(table);
-						var results = arr.filter((item) => {return item.style.background !== ""});
+						var cleanArr = arr.filter((item) => {return item.style.background !== ""});
+						console.log(cleanArr)
 						var links = []
-						for (let i = 0, l = results.length; i<l; i++) {
+						for (let i = 0, l = cleanArr.length; i<l; i++) {
 							links.push(results[i].getElementsByTagName('a'))
 							results.push({"author_name": results[i].getElementsByTagName('td')[0].innerHTML,
 							"title": links[i][0].innerHTML,
