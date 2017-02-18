@@ -10,8 +10,8 @@ if (req.query.token === token || req.query.token !== '' ) {
 	var str = req.query.text;
 	var slashcommand = splitString(str,0)
 	var command = new RegExp(slashcommand)
-	var query = str[1]
-	console.log("regex: " + command + " from: " + slashcommand + ".")
+	var query = splitString(str,1)
+	//console.log("regex: " + command + " from: " + slashcommand + ".")
 	switch (true) {
 		case (slashcommand === 'patches'):
 			request('http://kbs.zultys.com/patches.php', callbackPatches); 
@@ -126,16 +126,16 @@ if (req.query.token === token || req.query.token !== '' ) {
 						var cleanArr = arr.filter((item) => {return item.style.background !== ""});
 						var links = []
 						for (let i = 0, l = cleanArr.length; i<l; i++) {
-							console.log("HTML Object by Class: issues-text:")
-							console.log(cleanArr)
+							/*console.log("HTML Object by Class: issues-text:")
+							console.log(cleanArr) */
 							links.push(cleanArr[i].getElementsByTagName('a'))
 							results.push({"author_name": cleanArr[i].getElementsByTagName('td')[0].innerHTML,
 							"title": links[i][0].innerHTML,
 							"id": i, 
 							"title_link": "http://kbs.zultys.com/login.php?dir=" + links[i][0].href})
 						}
-						console.log(links)
-						console.log(results)
+						/* console.log(links)
+						console.log(results) */
 						if (results.length === 0) {
 							results.push({"title": "0 Search results, please try a different search term."})
 							}
