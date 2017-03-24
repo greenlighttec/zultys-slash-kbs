@@ -25,12 +25,34 @@ if (req.query.token === token || req.query.token !== '' ) {
 			};
 			request(options, callbackSearch);
 			break;
-		case (command.test("testing")):
-			var obj = {
-				 "text": "<http://www.kbs.zultys.com|MX 12.0.7>",
-				 "attachments": [{ "title": "Fax Server Patch 1", "title_link": "http://kbs.zultys.com/login.php?dir=patches.php?pid=12072" }]
-			}
-			res.send(obj)
+        case (command.test("testing")):
+            var msg = ''
+            var attachments = [{
+                "fallback": "MXIE call log will display two entries for a single call to a distributed agent in an MXnetwork.",
+                "color": "#36a64f",
+                "author_name": "/kbs patch 12080",
+                "author_icon": "http://flickr.com/icons/bobby.jpg",
+                "title": "Addressed Issues: MX-2748",
+                "text": "<http://kbs.zultys.com/issue.php?bid=MX-2748|MXIE call log will display two entries for a single call to a distributed agent in an MXnetwork.>",
+                "fields": [{
+                    "value": " ",
+                    "short": false
+                },
+                {
+                    "value": "<http://patches.zultys.biz/mxpatch-012087-mx250-12.0.7.ppc_405.zip|mxpatch-012087-mx250-12.0.7.ppc_405.patch>",
+                    "short": true
+                },
+                {
+                    "value": "<http://patches.zultys.biz/mxpatch-012087-mx-v-mx-se-12.0.7.i386.zip|mxpatch-012087-mx-v-mx-se-12.0.7.i386.patch>",
+                    "short": true
+                }],
+                "image_url": "http://my-website.com/path/to/image.jpg",
+                "thumb_url": "http://example.com/path/to/thumb.png",
+                "footer": "/KBS - Zultys in Slack",
+                "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png"
+            }]
+            msg = { "text": "Patches " + query, "attachments": attachments }
+			res.send(msg)
 			break;
 		case (slashcommand === 'help'):
 			var obj = {
@@ -79,11 +101,11 @@ if (req.query.token === token || req.query.token !== '' ) {
 	}
 
 
-			function callbackId(error, response, body){
+			function callbackId(error, response, body){ //Callback function to return specific PatchID articles.
 				if (!error && response.statusCode == 200) {
 				var msg = ''
 				var attachments = []
-					jsdom.env(body,function(err, window){
+					jsdom.env(body,function(err, window){ /*
 						var table = window.document.getElementsByClassName('issues-text')
 						var arr = [].slice.call(table);
 						var patches = arr.filter((item) => {return item.style.background !== ""});
@@ -94,7 +116,34 @@ if (req.query.token === token || req.query.token !== '' ) {
 							"title": links[i][0].innerHTML,
 							"id": i, 
 							"title_link": "http://kbs.zultys.com/login.php?dir=" + links[i][0].href})
-						}
+						} */
+						
+						var table = window.document.getElementsByTagName('a')
+						var mainBody = table[0].innerHTML
+						var dlLink1 = table[1].href
+						var dlink2 = table[2].href
+						var attachments = [ {
+								"fallback": "MXIE call log will display two entries for a single call to a distributed agent in an MXnetwork.",
+								"color": "#36a64f",
+								"author_name": "/kbs patch 12080",
+								"author_icon": "http://flickr.com/icons/bobby.jpg",
+								"title": "Addressed Issues: MX-2748",
+								"text": "<http://kbs.zultys.com/issue.php?bid=MX-2748|MXIE call log will display two entries for a single call to a distributed agent in an MXnetwork.>",
+								"fields": [ {
+									"value": " ", 
+									"short": false},
+								{
+									"value": "<http://patches.zultys.biz/mxpatch-012087-mx250-12.0.7.ppc_405.zip|mxpatch-012087-mx250-12.0.7.ppc_405.patch>",
+									"short": true
+								},
+								{
+									"value": "<http://patches.zultys.biz/mxpatch-012087-mx-v-mx-se-12.0.7.i386.zip|mxpatch-012087-mx-v-mx-se-12.0.7.i386.patch>",
+									"short": true
+								}],
+								"image_url": "http://my-website.com/path/to/image.jpg",
+								"thumb_url": "http://example.com/path/to/thumb.png",
+								"footer": "/KBS - Zultys in Slack",
+								"footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png"}]
 						if (query) {
 							var search =  new RegExp(query);
 							var searchResults = []
@@ -107,7 +156,7 @@ if (req.query.token === token || req.query.token !== '' ) {
 										}
 								msg = {"text": "Patches " + query, "attachments": searchResults}
 									} 
-							else { msg = {"text": "Patches", "attachments": attachments} }
+							else { msg = {"attachments": attachments} }
 						res.send(msg)
 					})
 				}
@@ -116,7 +165,7 @@ if (req.query.token === token || req.query.token !== '' ) {
 			
 			
 			}
-			function callbackSearch(error, response, body){
+			function callbackSearch(error, response, body){ //Callback function to return search results in formatted response.
 				if (!error && response.statusCode == 200) {
 				var msg = ''
 				var results = []
@@ -146,7 +195,7 @@ if (req.query.token === token || req.query.token !== '' ) {
 				else {console.log(response.statusCode + " " + error);res.send(`<h1>${error} and ${response.statusCode}</h1>`)}
 			}
 
-			function callbackPatches(error, response, body){
+			function callbackPatches(error, response, body){ //Callback function to return top 15 patches in formatted response and allow for searching
 				if (!error && response.statusCode == 200) {
 				var msg = ''
 				var attachments = []
@@ -181,7 +230,7 @@ if (req.query.token === token || req.query.token !== '' ) {
 				else {console.log(response.statusCode + " " + error);res.send(`<h1>${error} and ${response.statusCode}</h1>`)}
 			}
 	
-			function splitString(str,index) {
+			function splitString(str,index) { //Function to break /KBS <query> into /KBS <command> <query> where command is [0] and query is [1]
 				str = [str.split(' ', 1)[0], str.substr(str.split(' ', 1)[0].length+1)];
 				return (index !== undefined) ? str[index] : str;
 			}
