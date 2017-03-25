@@ -4,9 +4,11 @@ const request = require('request');
 const auth = process.env.ZULTYSKBS_LOGIN; //put your authentication token in this env variable for basic login in a base64 encoded string
 const token = process.env.SLACK_INBOUND_TOKEN || ' '; //put the Slack token being sent to this webapp for verification.
 const jsdom = require('jsdom');
+const baseURI = "http://kbs.zultys.com/login.php?dir="
 
 app.get('/', function (req, res) {
-if (req.query.token === token || req.query.token !== '' ) { 
+   if (req.query.token === token || req.query.token !== '') { 
+    // Assigns the request text to specific variables for later use determining the command, ID requested and search query
 	var str = req.query.text;
 	var slashcommand = splitString(str,0)
 	var command = new RegExp(slashcommand)
@@ -64,7 +66,7 @@ if (req.query.token === token || req.query.token !== '' ) {
 				"title": "/kbs search <search term>",
 				"text": "-Using `/KBS search` with a search term will return back the results of a search as if you were signed into KBS and searching online. It will only return the first 15 results.",
 				"id": "2"},{
-				"title": "/kbs patch <patch_id> (still WIP)",
+				"title": "/kbs patch <patch_id>",
 				"text": "-Using /KBS with patch and a Patch ID will display the information and download links for that specific patch.",
 				"id": "3"},{
 				"title": "/kbs article <article_id> (still WIP)",
@@ -125,7 +127,6 @@ if (req.query.token === token || req.query.token !== '' ) {
 								"fields": [ {
 									"value": " ", 
 									"short": false}],
-								"image_url": "http://my-website.com/path/to/image.jpg",
 								"thumb_url": "http://example.com/path/to/thumb.png",
 								"footer": "/KBS - Zultys in Slack",
                                 "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png"
@@ -173,7 +174,7 @@ if (req.query.token === token || req.query.token !== '' ) {
 							results.push({"author_name": cleanArr[i].getElementsByTagName('td')[0].innerHTML,
 							"title": links[i][0].innerHTML,
 							"id": i, 
-							"title_link": "http://kbs.zultys.com/login.php?dir=" + links[i][0].href})
+							"title_link": baseURI + links[i][0].href})
 						}
 						/* console.log(links)
 						console.log(results) */
@@ -201,7 +202,7 @@ if (req.query.token === token || req.query.token !== '' ) {
 							attachments.push({"author_name": patches[i].getElementsByTagName('td')[0].innerHTML,
 							"title": links[i][0].innerHTML,
 							"id": i, 
-							"title_link": "http://kbs.zultys.com/login.php?dir=" + links[i][0].href})
+							"title_link": baseURI + links[i][0].href})
 						}
 						if (query) {
 							var search =  new RegExp(query);
@@ -253,7 +254,7 @@ app.get('/kbs/search', function (req, res) {
 							results.push({"author_name": patches[i].getElementsByTagName('td')[0].innerHTML,
 							"title": links[i][0].innerHTML,
 							"id": i, 
-							"title_link": "http://kbs.zultys.com/login.php?dir=" + links[i][0].href})
+							"title_link": baseURI + links[i][0].href})
 						}
 						if (query) {
 							var search =  new RegExp('query');
