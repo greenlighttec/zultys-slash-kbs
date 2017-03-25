@@ -133,7 +133,7 @@ if (req.query.token === token || req.query.token !== '' ) {
 
                         //This creates the fields that provide the download links and text for the respose.
                         for (i = 0, l = addressedIssues.length; i < l; i++) {
-                            attachments[0].fields.push({ "value": "<http://kbs.zultys.com/login.php?dir=" + addressedIssues[i].href + "|" + issue[i] + ">" + ' ' + addressedIssues.innerHTML, "short": false })
+                            attachments[0].fields.push({ "value": "<http://kbs.zultys.com/login.php?dir=" + addressedIssues[i].href + "|" + issue[i] + ">" + ' ' + addressedIssues[i].innerHTML, "short": false })
                         }
                         for (i = 0, l = downloadLinks.length; i < l; i++) {
                             attachments[1].fields.push({ "value": "<" + downloadLinks[i].href + "|" + downloadLinks[i].innerHTML + ">", "short": true })
