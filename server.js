@@ -147,7 +147,7 @@ if (req.query.token === token || req.query.token !== '' ) {
                         //this function will strip the addressIssues URL down to their issue numbers.
                         function identifyIssue(addressedIssues) {
                             var array = []
-                            for (i = 0, l = addressedIssues.length; i < l, i++) {
+                            for (i = 0, l = addressedIssues.length; i < l; i++) {
                                 array.push(addressedIssues[i].href.replace('issue.php?bid=', ''))
                             }
                             return array
