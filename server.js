@@ -80,7 +80,7 @@ if (req.query.token === token || req.query.token !== '' ) {
 		case (slashcommand === 'patch'):
 			var id = splitString(str,1)
 			var options = {
-				url: `http://kbs.zultys.com/patches.php?pid=${id}`,
+				url: `http://kbs.zultys.com/patch.php?pid=${id}`,
 				headers: {
 				'Authorization': "Basic " + auth
 				}
@@ -100,36 +100,28 @@ if (req.query.token === token || req.query.token !== '' ) {
 			break;
 	}
 
-
 			function callbackId(error, response, body){ //Callback function to return specific PatchID articles.
 				if (!error && response.statusCode == 200) {
-				var msg = ''
-				var attachments = []
-					jsdom.env(body,function(err, window){ /*
-						var table = window.document.getElementsByClassName('issues-text')
-						var arr = [].slice.call(table);
-						var patches = arr.filter((item) => {return item.style.background !== ""});
-						var links = []
-						for (let i = 0, l = patches.length; i<l; i++) {
-							links.push(patches[i].getElementsByTagName('a'))
-							attachments.push({"author_name": patches[i].getElementsByTagName('td')[0].innerHTML,
-							"title": links[i][0].innerHTML,
-							"id": i, 
-							"title_link": "http://kbs.zultys.com/login.php?dir=" + links[i][0].href})
-						} */
-
+                    var msg = ''
+                jsdom.env(body, function (err, window) {
                         var page = window.document.getElementsByTagName('fieldset')
-                        var header = page[0].getElementsByClassName('patches-title')
-                        var addressedIssues = page[0].querySelectorAll('a[href^="issue.php"')
+                        var header = window.document.getElementsByClassName('patches-title')
+                        var addressedIssues = window.document.querySelectorAll('a[href^="issue.php"]')
                         var issue = identifyIssue(addressedIssues)
-                        var downloadLinks = page[0].querySelectorAll('li a')
-						var attachments = [ {
-								"fallback": "Something went wrong, please see the KBS Page directly",
-								"color": "#36a64f",
-								"author_name": header[0].innerHTML,
-								"author_icon": "http://flickr.com/icons/bobby.jpg",
-								"title": "Addressed Issues: " + issue,
-								"text": "This has to be worked out still",
+                        var downloadLinks = window.document.querySelectorAll('li a')
+
+                        var attachments = [{
+                            "fallback": "Something went wrong, please see the KBS Page directly",
+                            "color": "#3AA3E3",
+                            "author_name": header[0].innerHTML,
+                            "author_icon": "http://flickr.com/icons/bobby.jpg",
+                            "text": "Addressed Issues:" + issue,
+                            "fields": [{
+                                "value": " ",
+                                "short": false
+                            }]
+                        }, {
+                                "color": "#36a64f",
 								"fields": [ {
 									"value": " ", 
 									"short": false}],
@@ -140,35 +132,23 @@ if (req.query.token === token || req.query.token !== '' ) {
                         }]
 
                         //This creates the fields that provide the download links and text for the respose.
+                        for (i = 0, l = addressedIssues.length; i < l; i++) {
+                            attachments[0].fields.push({ "value": "<http://kbs.zultys.com/login.php?dir=" + addressedIssues[i].href + "|" + addressedIssues[i].innerHTML + ">", "short": false })
+                        }
                         for (i = 0, l = downloadLinks.length; i < l; i++) {
-                            attachments[0].fields.push({ "value": "<" + downloadLinks[i].href + "|" + downloadLinks[i].innerHTML + ">", "short": false })
+                            attachments[1].fields.push({ "value": "<" + downloadLinks[i].href + "|" + downloadLinks[i].innerHTML + ">", "short": true })
                         }
 
                         //this function will strip the addressIssues URL down to their issue numbers.
                         function identifyIssue(addressedIssues) {
                             var array = []
                             for (i = 0, l = addressedIssues.length; i < l; i++) {
-                                array.push(addressedIssues[i].href.replace('issue.php?bid=', ''))
+                                array.push(' ' + addressedIssues[i].href.replace('issue.php?bid=', ''))
                             }
                             return array
                         }
-
-
-                        //This determines if any filter text was added to the query, if there has been, a search is done to match the query using regex and whatever is matched is returned. Otherwise the full response is returned.
-                      /*  if (query) {
-							var search =  new RegExp(query);
-							var searchResults = []
-							for (let i = 0,l = attachments.length; i<l;i++){
-								if (search.test(attachments[i].author_name)) {
-									searchResults.push(attachments[i])
-									}}
-										if (searchResults.length < 1) {
-											searchResults.push({"title": "No patch matches with that filter, please try again"})
-										}
-								msg = {"text": "Patches " + query, "attachments": searchResults}
-									} 
-							else { msg = {"attachments": attachments} } */
-                        msg = { "text": "Patches " + query, "attachments": attachments }
+                    
+                        msg = { "text": slashcommand + ' ' + query, "attachments": attachments }
 						res.send(msg)
 					})
 				}
