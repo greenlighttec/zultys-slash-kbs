@@ -155,7 +155,7 @@ if (req.query.token === token || req.query.token !== '' ) {
 
 
                         //This determines if any filter text was added to the query, if there has been, a search is done to match the query using regex and whatever is matched is returned. Otherwise the full response is returned.
-                        if (query) {
+                      /*  if (query) {
 							var search =  new RegExp(query);
 							var searchResults = []
 							for (let i = 0,l = attachments.length; i<l;i++){
@@ -167,7 +167,8 @@ if (req.query.token === token || req.query.token !== '' ) {
 										}
 								msg = {"text": "Patches " + query, "attachments": searchResults}
 									} 
-							else { msg = {"attachments": attachments} }
+							else { msg = {"attachments": attachments} } */
+                        msg = { "text": "Patches " + query, "attachments": attachments }
 						res.send(msg)
 					})
 				}
