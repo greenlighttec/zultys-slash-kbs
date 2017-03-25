@@ -117,34 +117,45 @@ if (req.query.token === token || req.query.token !== '' ) {
 							"id": i, 
 							"title_link": "http://kbs.zultys.com/login.php?dir=" + links[i][0].href})
 						} */
-						
-						var table = window.document.getElementsByTagName('a')
-						var mainBody = table[0].innerHTML
-						var dlLink1 = table[1].href
-						var dlink2 = table[2].href
+
+                        var page = window.document.getElementsByTagName('fieldset')
+                        var header = page[0].getElementsByClassName('patches-title')
+                        var addressedIssues = page[0].querySelectorAll('a[href^="issue.php"')
+                        var issue = identifyIssue(addressedIssues)
+                        var downloadLinks = page[0].querySelectorAll('li a')
 						var attachments = [ {
-								"fallback": "MXIE call log will display two entries for a single call to a distributed agent in an MXnetwork.",
+								"fallback": "Something went wrong, please see the KBS Page directly",
 								"color": "#36a64f",
-								"author_name": "/kbs patch 12080",
+								"author_name": header[0].innerHTML,
 								"author_icon": "http://flickr.com/icons/bobby.jpg",
-								"title": "Addressed Issues: MX-2748",
-								"text": "<http://kbs.zultys.com/issue.php?bid=MX-2748|MXIE call log will display two entries for a single call to a distributed agent in an MXnetwork.>",
+								"title": "Addressed Issues: " + issue,
+								"text": "This has to be worked out still",
 								"fields": [ {
 									"value": " ", 
-									"short": false},
-								{
-									"value": "<http://patches.zultys.biz/mxpatch-012087-mx250-12.0.7.ppc_405.zip|mxpatch-012087-mx250-12.0.7.ppc_405.patch>",
-									"short": true
-								},
-								{
-									"value": "<http://patches.zultys.biz/mxpatch-012087-mx-v-mx-se-12.0.7.i386.zip|mxpatch-012087-mx-v-mx-se-12.0.7.i386.patch>",
-									"short": true
-								}],
+									"short": false}],
 								"image_url": "http://my-website.com/path/to/image.jpg",
 								"thumb_url": "http://example.com/path/to/thumb.png",
 								"footer": "/KBS - Zultys in Slack",
-								"footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png"}]
-						if (query) {
+                                "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png"
+                        }]
+
+                        //This creates the fields that provide the download links and text for the respose.
+                        for (i = 0, l = downloadLinks.length; i < l; i++) {
+                            attachments[0].fields.push({ "value": "<" + downloadLinks[i].href + "|" + downloadLinks[i].innerHTML + ">", "short": false })
+                        }
+
+                        //this function will strip the addressIssues URL down to their issue numbers.
+                        function identifyIssue(addressedIssues) {
+                            var array = []
+                            for (i = 0, l = addressedIssues.length; i < l, i++) {
+                                array.push(addressedIssues[i].href.replace('issue.php?bid=', ''))
+                            }
+                            return array
+                        }
+
+
+                        //This determines if any filter text was added to the query, if there has been, a search is done to match the query using regex and whatever is matched is returned. Otherwise the full response is returned.
+                        if (query) {
 							var search =  new RegExp(query);
 							var searchResults = []
 							for (let i = 0,l = attachments.length; i<l;i++){
