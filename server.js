@@ -79,7 +79,7 @@ app.get('/', function (req, res) {
 				"id": "5"
 				}]
 				}
-            sendResponse(msg)
+            sendResponse(obj)
 			break;
 		case (slashcommand === 'patch'):
 			var id = splitString(str,1)
