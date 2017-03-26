@@ -116,7 +116,9 @@ app.get('/', function (req, res) {
         }
 
         function postIssueToSlack(err, window) {
+            //console.log(window)
             var issueID = document.querySelectorAll('th+td')[0]
+            console.log(issueID)
             var category = document.querySelectorAll('th+td')[1]
             var title = document.querySelectorAll('th+td')[2]
             var subsystem = document.querySelectorAll('th+td')[3]
