@@ -10,6 +10,7 @@ app.get('/', function (req, res) {
    if (req.query.token === token || req.query.token !== '') { 
     // Assigns the request text to specific variables for later use determining the command, ID requested and search query
 	var str = req.query.text;
+    var testString = new RegExp(req.query.text)
 	var slashcommand = splitString(str,0)
 	var command = new RegExp(slashcommand)
 	var query = splitString(str,1)
@@ -298,7 +299,8 @@ app.get('/', function (req, res) {
             }
 
             function sendResponse(msg) {
-                msg.response_type = "in_channel"
+                if (!testString.test("private")) {
+                msg.response_type = "in_channel"}
                 res.send(msg)
             }
 	}
