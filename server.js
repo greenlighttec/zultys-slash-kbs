@@ -79,7 +79,7 @@ app.get('/', function (req, res) {
 				"id": "5"
 				}]
 				}
-				res.send(obj)
+            sendResponse(msg)
 			break;
 		case (slashcommand === 'patch'):
 			var id = splitString(str,1)
@@ -169,7 +169,7 @@ app.get('/', function (req, res) {
                 attachments[0].title = description.innerHTML
             } else {attachments[0].title = title.innerHTML}
             msg = { "text": slashcommand + ' ' + query, "attachments": attachments }
-            res.send(msg)
+            sendResponse(msg)
         }
     }
 			function callbackPatchId(error, response, body){ //Callback function to return specific PatchID articles.
@@ -220,7 +220,7 @@ app.get('/', function (req, res) {
                         }
                     
                         msg = { "text": slashcommand + ' ' + query, "attachments": attachments }
-						res.send(msg)
+						sendResponse(msg)
 					})
 				}
 				else {console.log(response.statusCode + " " + error);res.send(`<h1>${error} and ${response.statusCode}</h1>`)}
@@ -299,8 +299,7 @@ app.get('/', function (req, res) {
             }
 
             function sendResponse(msg) {
-                if (!testString.test("private")) {
-                msg.response_type = "in_channel"}
+                msg.response_type = "in_channel"
                 res.send(msg)
             }
 	}
