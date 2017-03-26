@@ -87,11 +87,18 @@ app.get('/', function (req, res) {
 				'Authorization': "Basic " + auth
 				}
 			};
-			request(options, callbackId);
+			request(options, callbackPatchId);
 			break;
 		case (slashcommand === 'article'):
-			var id = splitString(str,1)
-			res.send("This command is a future enhancement that will be available shortly. Please check back later. \n\n " + id);
+            var id = splitString(str, 1)
+            var options = {
+                url: `http://kbs.zultys.com/issue.php?bid=${id}`,
+                headers: {
+                    'Authorization': "Basic " + auth
+                }
+            }
+			//res.send("This command is a future enhancement that will be available shortly. Please check back later. \n\n " + id);
+            request(options, callbackIssueId)
 			break;
 		case (slashcommand === 'software'):
 			var id = splitString(str,1)
@@ -102,7 +109,60 @@ app.get('/', function (req, res) {
 			break;
 	}
 
-			function callbackId(error, response, body){ //Callback function to return specific PatchID articles.
+    function callbackIssueId(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var msg = ''
+            jsdom.env(body,postIssueToSlack)
+        }
+
+        function postIssueToSlack(err, window) {
+            var issueID = document.querySelectorAll('th+td')[0]
+            var category = document.querySelectorAll('th+td')[1]
+            var title = document.querySelectorAll('th+td')[2]
+            var subsystem = document.querySelectorAll('th+td')[3]
+            var affectedRelease = document.querySelectorAll('th+td')[4]
+            var tempPatchLink = document.querySelectorAll('th+td')[5]
+            var description = document.querySelectorAll('th+td')[6]
+            var patchLinks = document.querySelectorAll('a[href^="patch.php"]')
+            var attachments = [{
+                "fallback": "Something went wrong, please see the KBS Page directly",
+                "color": "#3AA3E3",
+                "author_name": "Issue ID: " + issueID.innerHTML,
+                "author_icon": "http://flickr.com/icons/bobby.jpg",
+                "title": "This will be replaced soon",
+                "fields": [{
+                    "value": " ",
+                    "short": false
+                }, {
+                    "title": "Category",
+                    "value": category.innerHTML,
+                    "short": true
+                }, {
+                    "title": "Affected Releases",
+                    "value": affectedRelease.innerHTML,
+                    "short": true
+                }, {
+                    "title": "Subsystem",
+                    "value": subsystem.innerHTML,
+                    "short": false
+                }]
+            }, {
+                "color": "#36a64f",
+                "fields": [{
+                    "title": "Available Patch Versions",
+                    "value": " ",
+                    "short": false
+                }],
+                "thumb_url": "http://example.com/path/to/thumb.png",
+                "footer": "/KBS - Zultys in Slack",
+                "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png"
+                }]
+            for (i = 0, l = patchLinks.length; i < l; i++) {
+                attachments[1].fields.push({ "value": "<" + baseURI + patchLinks[i].href + "|" + patchLinks[i].innerHTML + ">", "short": true })
+            }
+        }
+    }
+			function callbackPatchId(error, response, body){ //Callback function to return specific PatchID articles.
 				if (!error && response.statusCode == 200) {
                     var msg = ''
                 jsdom.env(body, function (err, window) {
@@ -134,7 +194,7 @@ app.get('/', function (req, res) {
 
                         //This creates the fields that provide the download links and text for the respose.
                         for (i = 0, l = addressedIssues.length; i < l; i++) {
-                            attachments[0].fields.push({ "value": "<http://kbs.zultys.com/login.php?dir=" + addressedIssues[i].href + "|" + issue[i] + ">" + ' ' + addressedIssues[i].innerHTML, "short": false })
+                            attachments[0].fields.push({ "value": "<"+ baseURI + addressedIssues[i].href + "|" + issue[i] + ">" + ' ' + addressedIssues[i].innerHTML, "short": false })
                         }
                         for (i = 0, l = downloadLinks.length; i < l; i++) {
                             attachments[1].fields.push({ "value": "<" + downloadLinks[i].href + "|" + downloadLinks[i].innerHTML + ">", "short": true })
