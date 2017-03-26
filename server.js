@@ -53,8 +53,9 @@ app.get('/', function (req, res) {
                 "footer": "/KBS - Zultys in Slack",
                 "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png"
             }]
-            msg = { "response_type": "in_channel", "text": "Patches " + query, "attachments": attachments }
-			res.send(msg)
+            msg = {"text": "Patches " + query, "attachments": attachments }
+            //res.send(msg)
+            sendResponse(msg)
 			break;
 		case (slashcommand === 'help'):
 			var obj = {
@@ -294,7 +295,12 @@ app.get('/', function (req, res) {
 			function splitString(str,index) { //Function to break /KBS <query> into /KBS <command> <query> where command is [0] and query is [1]
 				str = [str.split(' ', 1)[0], str.substr(str.split(' ', 1)[0].length+1)];
 				return (index !== undefined) ? str[index] : str;
-			}
+            }
+
+            function sendResponse(msg) {
+                msg.response_type = "in_channel"
+                res.send(msg)
+            }
 	}
 	})
 
