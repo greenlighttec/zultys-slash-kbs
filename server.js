@@ -70,7 +70,7 @@ app.get('/', function (req, res) {
 				"text": "-Using /KBS with patch and a Patch ID will display the information and download links for that specific patch.",
 				"id": "3"},{
 				"title": "/kbs article <article_id> (still WIP)",
-				"text": "-Using `/KBS article` and supplying an article ID will display the article for that ID including any relevant links for you to click on.",
+				"text": "-Using `/KBS article` and supplying an article ID will display the article for that ID including any relevant links for you to click on. This currently works for Issue-IDs but White Papers are still WIP",
 				"id": "4"},{
 				"title": "/kbs software <software_id> (still WIP)",
 				"text": "-Using `/KBS software` and a Software ID will display the information and download links for that specific software, including firmware or product software.",
@@ -114,18 +114,19 @@ app.get('/', function (req, res) {
             var msg = ''
             jsdom.env(body,postIssueToSlack)
         }
+        else { console.log(response.statusCode + " " + error); res.send(`<h1>${error} and ${response.statusCode}</h1>`) }
+
 
         function postIssueToSlack(err, window) {
-            //console.log(window)
-            var issueID = document.querySelectorAll('th+td')[0]
-            console.log(issueID)
-            var category = document.querySelectorAll('th+td')[1]
-            var title = document.querySelectorAll('th+td')[2]
-            var subsystem = document.querySelectorAll('th+td')[3]
-            var affectedRelease = document.querySelectorAll('th+td')[4]
-            var tempPatchLink = document.querySelectorAll('th+td')[5]
-            var description = document.querySelectorAll('th+td')[6]
-            var patchLinks = document.querySelectorAll('a[href^="patch.php"]')
+            var page = window.document.querySelectorAll('th+td')
+            var issueID = page[0]
+            var category = page[1]
+            var title = page[2]
+            var subsystem = page[3]
+            var affectedRelease = page[4]
+            var tempPatchLink = page[5]
+            var description = page[6]
+            var patchLinks = window.document.querySelectorAll('a[href^="patch.php"]')
             var attachments = [{
                 "fallback": "Something went wrong, please see the KBS Page directly",
                 "color": "#3AA3E3",
@@ -162,6 +163,11 @@ app.get('/', function (req, res) {
             for (i = 0, l = patchLinks.length; i < l; i++) {
                 attachments[1].fields.push({ "value": "<" + baseURI + patchLinks[i].href + "|" + patchLinks[i].innerHTML + ">", "short": true })
             }
+            if (description) {
+                attachments[0].title = description.innerHTML
+            } else {attachments[0].title = title.innerHTML}
+            msg = { "text": slashcommand + ' ' + query, "attachments": attachments }
+            res.send(msg)
         }
     }
 			function callbackPatchId(error, response, body){ //Callback function to return specific PatchID articles.
