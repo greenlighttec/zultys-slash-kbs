@@ -53,7 +53,7 @@ app.get('/', function (req, res) {
                 "footer": "/KBS - Zultys in Slack",
                 "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png"
             }]
-            msg = { "text": "Patches " + query, "attachments": attachments }
+            msg = { "response_type": "in_channel", "text": "Patches " + query, "attachments": attachments }
 			res.send(msg)
 			break;
 		case (slashcommand === 'help'):
